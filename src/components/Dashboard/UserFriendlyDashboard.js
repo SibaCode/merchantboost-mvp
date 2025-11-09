@@ -256,12 +256,12 @@ const UserFriendlyDashboard = () => {
         >
           📊 {t.overview}
         </button>
-        <button 
+        {/* <button 
           style={{...styles.navButton, ...(activeSection === 'transactions' && styles.activeNavButton)}}
           onClick={() => setActiveSection('transactions')}
         >
           💰 {t.transactions}
-        </button>
+        </button> */}
         <button 
           style={{...styles.navButton, ...(activeSection === 'services' && styles.activeNavButton)}}
           onClick={() => setActiveSection('services')}
@@ -308,7 +308,7 @@ const UserFriendlyDashboard = () => {
             <div style={styles.statCard}>
               <div style={styles.statIcon}>📄</div>
               <div style={styles.statContent}>
-                <h3 style={styles.statValue}>{stats.receiptUploads}</h3>
+                <h3 style={styles.statValue}>5</h3>
                 <p style={styles.statLabel}>{t.receiptsProcessed}</p>
               </div>
             </div>
@@ -318,14 +318,14 @@ const UserFriendlyDashboard = () => {
           <div style={styles.quickActions}>
             <h2 style={styles.sectionTitle}>🚀 {t.quickActions}</h2>
             <div style={styles.actionsGrid}>
-              <a href="/templates" style={styles.actionCard}>
+              {/* <a href="/templates" style={styles.actionCard}>
                 <div style={styles.actionIcon}>📱</div>
                 <div style={styles.actionContent}>
                   <h4 style={styles.actionTitle}>{t.downloadTemplates}</h4>
                   <p style={styles.actionDescription}>{t.downloadDesc}</p>
                 </div>
                 <div style={styles.actionArrow}>→</div>
-              </a>
+              </a> */}
 
 
 <a href="/transactions/cash" style={styles.actionCard}>
@@ -346,14 +346,14 @@ const UserFriendlyDashboard = () => {
   <div style={styles.actionArrow}>→</div>
 </a>
 
-<a href="/transactions/receipt-upload" style={styles.actionCard}>
+{/* <a href="/transactions/receipt-upload" style={styles.actionCard}>
   <div style={styles.actionIcon}>📄</div>
   <div style={styles.actionContent}>
     <h4 style={styles.actionTitle}>{t.uploadReceipt}</h4>
     <p style={styles.actionDescription}>{t.uploadReceiptDesc}</p>
   </div>
   <div style={styles.actionArrow}>→</div>
-</a>
+</a> */}
 
 <a href="/ai-chatbot" style={styles.actionCard}>
   <div style={styles.actionIcon}>🤖</div>

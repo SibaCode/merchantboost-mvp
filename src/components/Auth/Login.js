@@ -90,12 +90,12 @@ const Login = () => {
         </form>
 
         <div style={styles.demoSection}>
-          <button onClick={handleDemoLogin} style={styles.demoButton}>
+          {/* <button onClick={handleDemoLogin} style={styles.demoButton}>
             🚀 Use Demo Credentials
           </button>
           <p style={styles.demoNote}>
             Demo: demo@merchantboost.com / demo123
-          </p>
+          </p> */}
         </div>
 
         <p style={styles.signupLink}>

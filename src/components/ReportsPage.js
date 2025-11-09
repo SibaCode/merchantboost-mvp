@@ -3,13 +3,96 @@ import { useNavigate } from 'react-router-dom';
 
 const ReportsPage = () => {
   const navigate = useNavigate();
+  
+  // Mock contexts if they're not available
+  const mockAuthContext = {
+    currentUser: { uid: 'demo-user' },
+    userProfile: { 
+      businessName: 'Your Businesds',
+      registrationType: 'tax'
+    }
+  };
+
+  const mockLanguageContext = {
+    language: 'en',
+    t: (key) => {
+      const translations = {
+        // English translations
+        'generating.title': 'Generating Business Intelligence',
+        'generating.description': 'Analyzing your transaction data and preparing comprehensive insights...',
+        'header.title': 'Business Intelligence Dashboard',
+        'header.subtitle': 'Comprehensive analytics and insights from your transaction data',
+        'buttons.pdfReport': '📊 Generate PDF Report',
+        'buttons.csvExport': '📈 Export CSV Data',
+        'buttons.addTransaction': '➕ Add Another Transaction',
+        'buttons.backDashboard': '📋 Back to Dashboard',
+        'navigation.overview': 'Business Overview',
+        'navigation.financial': 'Financial Summary',
+        'navigation.insights': 'AI Business Insights',
+        'overview.stats.totalRevenue': 'Total Revenue',
+        'overview.stats.transactions': 'Transactions',
+        'overview.stats.averageTransaction': 'Average Transaction',
+        'overview.stats.growthRate': 'Growth Rate',
+        'overview.charts.revenueTrend': 'Revenue Trend',
+        'overview.charts.topCategories': 'Top Categories',
+        'overview.charts.chartNote': 'Single transaction recorded: R2,847.50',
+        'overview.activity.title': 'Recent Activity',
+        'financial.incomeStatement': 'Income Statement',
+        'financial.taxSummary': 'Tax Summary',
+        'financial.revenue': 'Revenue',
+        'financial.expenses': 'Expenses',
+        'financial.netProfit': 'Net Profit',
+        'financial.estimatedTax': 'Estimated Tax',
+        'financial.cashFlow': 'Cash Flow',
+        'financial.projections': 'Business Projections',
+        'financial.positive': 'Positive',
+        'financial.negative': 'Negative',
+        'insights.title': 'AI Business Analysis',
+        'insights.description': 'Based on your transaction patterns, your business shows strong potential for growth.',
+        'insights.businessHealth': 'Business Health',
+        'insights.recommendations': '💡 Recommendations',
+        'insights.opportunities': '🚀 Growth Opportunities',
+        'insights.nextSteps': 'Next Steps',
+        'insights.actions.applyLoan': 'Apply for Business Loan',
+        'insights.actions.exploreInsurance': 'Explore Insurance Options',
+        'insights.actions.scheduleMentor': 'Schedule Mentor Session',
+        'pdf.title': 'Business Intelligence Report',
+        'pdf.generatedFor': 'Generated for',
+        'pdf.date': 'Date',
+        'pdf.summary': 'Executive Summary',
+        'pdf.preparedBy': 'Prepared by MerchantBoost AI'
+      };
+      return translations[key] || key;
+    }
+  };
+
+  // Try to use real contexts, fallback to mock if not available
+  let authContext, languageContext;
+  
+  try {
+    // eslint-disable-next-line
+    authContext = require('../../context/AuthContext').useAuth();
+  } catch (error) {
+    authContext = mockAuthContext;
+  }
+  
+  try {
+    // eslint-disable-next-line
+    languageContext = require('../../context/LanguageContext').useLanguage();
+  } catch (error) {
+    languageContext = mockLanguageContext;
+  }
+
+  const { currentUser, userProfile } = authContext;
+  const { language, t } = languageContext;
+
   const [activeReport, setActiveReport] = useState('overview');
   const [generating, setGenerating] = useState(true);
 
   // Mock data for reports
   const mockReports = {
     overview: {
-      title: "Business Overview",
+      title: t('navigation.overview'),
       data: {
         totalRevenue: 2847.50,
         totalTransactions: 1,
@@ -20,18 +103,18 @@ const ReportsPage = () => {
       }
     },
     financial: {
-      title: "Financial Summary",
+      title: t('navigation.financial'),
       data: {
         monthlyRevenue: 2847.50,
         expenses: 0,
         profit: 2847.50,
         taxLiability: 284.75,
-        cashFlow: "Positive",
+        cashFlow: t('financial.positive'),
         projections: "Strong growth potential"
       }
     },
     insights: {
-      title: "AI Business Insights",
+      title: t('navigation.insights'),
       data: {
         healthScore: 85,
         recommendations: [
@@ -57,56 +140,184 @@ const ReportsPage = () => {
   }, []);
 
   const generatePDFReport = () => {
-    alert("📊 Generating PDF Report... This would download a comprehensive business report in a real application.");
+    // Create PDF content
+    const pdfContent = `
+      <html>
+        <head>
+          <title>${t('pdf.title')}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 40px; }
+            .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
+            .business-name { font-size: 24px; font-weight: bold; color: #3b82f6; }
+            .report-title { font-size: 28px; font-weight: bold; margin: 10px 0; }
+            .section { margin: 30px 0; }
+            .section-title { font-size: 20px; font-weight: bold; color: #1e293b; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+            .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin: 20px 0; }
+            .stat-card { background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
+            .stat-value { font-size: 24px; font-weight: bold; color: #1e293b; }
+            .stat-label { color: #64748b; font-size: 14px; }
+            .footer { margin-top: 50px; text-align: center; color: #64748b; font-size: 12px; }
+            table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+            th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+            th { background: #f1f5f9; font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="business-name">${userProfile?.businessName || 'Your Business'}</div>
+            <div class="report-title">${t('pdf.title')}</div>
+            <div>${t('pdf.generatedFor')}: ${userProfile?.businessName || 'Your Business'}</div>
+            <div>${t('pdf.date')}: ${new Date().toLocaleDateString()}</div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">${t('pdf.summary')}</div>
+            <p>${t('insights.description')}</p>
+          </div>
+
+          <div class="section">
+            <div class="section-title">${t('overview.stats.totalRevenue')}</div>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-value">R${mockReports.overview.data.totalRevenue.toLocaleString()}</div>
+                <div class="stat-label">${t('overview.stats.totalRevenue')}</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">${mockReports.overview.data.totalTransactions}</div>
+                <div class="stat-label">${t('overview.stats.transactions')}</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">R${mockReports.overview.data.averageTransaction.toLocaleString()}</div>
+                <div class="stat-label">${t('overview.stats.averageTransaction')}</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">${mockReports.overview.data.growthRate}%</div>
+                <div class="stat-label">${t('overview.stats.growthRate')}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">${t('financial.incomeStatement')}</div>
+            <table>
+              <tr>
+                <th>${t('financial.revenue')}</th>
+                <td style="color: #10b981;">R${mockReports.financial.data.monthlyRevenue.toLocaleString()}</td>
+              </tr>
+              <tr>
+                <th>${t('financial.expenses')}</th>
+                <td style="color: #ef4444;">R${mockReports.financial.data.expenses.toLocaleString()}</td>
+              </tr>
+              <tr>
+                <th><strong>${t('financial.netProfit')}</strong></th>
+                <td style="color: #10b981; font-weight: bold;">R${mockReports.financial.data.profit.toLocaleString()}</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="section">
+            <div class="section-title">${t('insights.recommendations')}</div>
+            <ul>
+              ${mockReports.insights.data.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+            </ul>
+          </div>
+
+          <div class="footer">
+            ${t('pdf.preparedBy')}<br/>
+            ${new Date().toLocaleString()}
+          </div>
+        </body>
+      </html>
+    `;
+
+    // Create PDF download
+    const blob = new Blob([pdfContent], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Business_Report_${userProfile?.businessName?.replace(/\s+/g, '_') || 'YourBusiness'}_${new Date().toISOString().split('T')[0]}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    alert(`${t('buttons.pdfReport')} - ${userProfile?.businessName || 'Your Business'}`);
   };
 
   const generateCSVExport = () => {
-    alert("📈 Exporting CSV Data... This would download transaction data in CSV format.");
+    const csvContent = `
+      Category,Value
+      ${t('overview.stats.totalRevenue')},R${mockReports.overview.data.totalRevenue}
+      ${t('overview.stats.transactions')},${mockReports.overview.data.totalTransactions}
+      ${t('overview.stats.averageTransaction')},R${mockReports.overview.data.averageTransaction}
+      ${t('financial.revenue')},R${mockReports.financial.data.monthlyRevenue}
+      ${t('financial.netProfit')},R${mockReports.financial.data.profit}
+      ${t('financial.estimatedTax')},R${mockReports.financial.data.taxLiability}
+    `;
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Business_Data_${userProfile?.businessName?.replace(/\s+/g, '_') || 'YourBusiness'}_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    alert(t('buttons.csvExport'));
   };
 
-  // if (generating) {
-  //   return (
-  //     <div style={reportStyles.generatingContainer}>
-  //       <div style={reportStyles.generatingContent}>
-  //         <div style={reportStyles.generatingIcon}>
-  //           <div style={reportStyles.rotatingChart}>
-  //             <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-  //               <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
-  //               <path d="M3.27 6.96L12 12.01l8.73-5.05"/>
-  //               <path d="M12 22.08V12"/>
-  //             </svg>
-  //           </div>
-  //         </div>
-  //         <h2 style={reportStyles.generatingTitle}>Generating Business Intelligence</h2>
-  //         <p style={reportStyles.generatingDescription}>
-  //           Analyzing your transaction data and preparing comprehensive insights...
-  //         </p>
-  //         <div style={reportStyles.progressContainer}>
-  //           <div style={reportStyles.progressBar}>
-  //             <div style={reportStyles.progressFill}></div>
-  //           </div>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+//   if (generating) {
+//     return (
+//       <div style={reportStyles.generatingContainer}>
+//         <div style={reportStyles.generatingContent}>
+//           <div style={reportStyles.generatingIcon}>
+//             <div style={reportStyles.rotatingChart}>
+//               <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+//                 <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+//                 <path d="M3.27 6.96L12 12.01l8.73-5.05"/>
+//                 <path d="M12 22.08V12"/>
+//               </svg>
+//             </div>
+//           </div>
+//           <h2 style={reportStyles.generatingTitle}>{t('generating.title')}</h2>
+//           <p style={reportStyles.generatingDescription}>
+//             {t('generating.description')}
+//           </p>
+//           <div style={reportStyles.progressContainer}>
+//             <div style={reportStyles.progressBar}>
+//               <div style={reportStyles.progressFill}></div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     );
+//   }
 
   return (
     <div style={reportStyles.container}>
       {/* Header */}
       <div style={reportStyles.header}>
         <div style={reportStyles.headerContent}>
-          <h1 style={reportStyles.title}>Business Intelligence Dashboard</h1>
+          <h1 style={reportStyles.title}>{t('header.title')}</h1>
           <p style={reportStyles.subtitle}>
-            Comprehensive analytics and insights from your transaction data
+            {t('header.subtitle')}
           </p>
+          <div style={reportStyles.businessInfo}>
+            {userProfile?.businessName && (
+              <span style={reportStyles.businessName}>
+                {userProfile.businessName}
+              </span>
+            )}
+          </div>
         </div>
         <div style={reportStyles.headerActions}>
           <button onClick={generatePDFReport} style={reportStyles.exportButton}>
-            📊 Generate PDF Report
+            {t('buttons.pdfReport')}
           </button>
           <button onClick={generateCSVExport} style={reportStyles.exportButton}>
-            📈 Export CSV Data
+            {t('buttons.csvExport')}
           </button>
         </div>
       </div>
@@ -138,44 +349,44 @@ const ReportsPage = () => {
                 <div style={reportStyles.statIcon}>💰</div>
                 <div style={reportStyles.statContent}>
                   <div style={reportStyles.statValue}>R{mockReports.overview.data.totalRevenue.toLocaleString()}</div>
-                <div style={reportStyles.statLabel}>Total Revenue</div>
+                  <div style={reportStyles.statLabel}>{t('overview.stats.totalRevenue')}</div>
                 </div>
               </div>
               <div style={reportStyles.statCard}>
                 <div style={reportStyles.statIcon}>🔄</div>
                 <div style={reportStyles.statContent}>
                   <div style={reportStyles.statValue}>{mockReports.overview.data.totalTransactions}</div>
-                  <div style={reportStyles.statLabel}>Transactions</div>
+                  <div style={reportStyles.statLabel}>{t('overview.stats.transactions')}</div>
                 </div>
               </div>
               <div style={reportStyles.statCard}>
                 <div style={reportStyles.statIcon}>📊</div>
                 <div style={reportStyles.statContent}>
                   <div style={reportStyles.statValue}>R{mockReports.overview.data.averageTransaction.toLocaleString()}</div>
-                  <div style={reportStyles.statLabel}>Average Transaction</div>
+                  <div style={reportStyles.statLabel}>{t('overview.stats.averageTransaction')}</div>
                 </div>
               </div>
               <div style={reportStyles.statCard}>
                 <div style={reportStyles.statIcon}>📈</div>
                 <div style={reportStyles.statContent}>
                   <div style={reportStyles.statValue}>{mockReports.overview.data.growthRate}%</div>
-                  <div style={reportStyles.statLabel}>Growth Rate</div>
+                  <div style={reportStyles.statLabel}>{t('overview.stats.growthRate')}</div>
                 </div>
               </div>
             </div>
 
             <div style={reportStyles.chartsGrid}>
               <div style={reportStyles.chartCard}>
-                <h3 style={reportStyles.chartTitle}>Revenue Trend</h3>
+                <h3 style={reportStyles.chartTitle}>{t('overview.charts.revenueTrend')}</h3>
                 <div style={reportStyles.chartPlaceholder}>
                   <div style={reportStyles.barChart}>
                     <div style={reportStyles.bar} data-value="2847"></div>
                   </div>
-                  <p style={reportStyles.chartNote}>Single transaction recorded: R2,847.50</p>
+                  <p style={reportStyles.chartNote}>{t('overview.charts.chartNote')}</p>
                 </div>
               </div>
               <div style={reportStyles.chartCard}>
-                <h3 style={reportStyles.chartTitle}>Top Categories</h3>
+                <h3 style={reportStyles.chartTitle}>{t('overview.charts.topCategories')}</h3>
                 <div style={reportStyles.chartPlaceholder}>
                   <div style={reportStyles.pieChart}></div>
                   <div style={reportStyles.categoryList}>
@@ -191,7 +402,7 @@ const ReportsPage = () => {
             </div>
 
             <div style={reportStyles.activityCard}>
-              <h3 style={reportStyles.activityTitle}>Recent Activity</h3>
+              <h3 style={reportStyles.activityTitle}>{t('overview.activity.title')}</h3>
               <div style={reportStyles.activityList}>
                 {mockReports.overview.data.recentActivity.map((activity, index) => (
                   <div key={index} style={reportStyles.activityItem}>
@@ -209,33 +420,33 @@ const ReportsPage = () => {
           <div style={reportStyles.reportSection}>
             <div style={reportStyles.financialGrid}>
               <div style={reportStyles.financialCard}>
-                <h3 style={reportStyles.financialTitle}>Income Statement</h3>
+                <h3 style={reportStyles.financialTitle}>{t('financial.incomeStatement')}</h3>
                 <div style={reportStyles.financialData}>
                   <div style={reportStyles.financialRow}>
-                    <span>Revenue</span>
+                    <span>{t('financial.revenue')}</span>
                     <span style={reportStyles.positive}>R{mockReports.financial.data.monthlyRevenue.toLocaleString()}</span>
                   </div>
                   <div style={reportStyles.financialRow}>
-                    <span>Expenses</span>
+                    <span>{t('financial.expenses')}</span>
                     <span style={reportStyles.negative}>R{mockReports.financial.data.expenses.toLocaleString()}</span>
                   </div>
                   <div style={reportStyles.financialDivider}></div>
                   <div style={reportStyles.financialRow}>
-                    <strong>Net Profit</strong>
+                    <strong>{t('financial.netProfit')}</strong>
                     <strong style={reportStyles.positive}>R{mockReports.financial.data.profit.toLocaleString()}</strong>
                   </div>
                 </div>
               </div>
 
               <div style={reportStyles.financialCard}>
-                <h3 style={reportStyles.financialTitle}>Tax Summary</h3>
+                <h3 style={reportStyles.financialTitle}>{t('financial.taxSummary')}</h3>
                 <div style={reportStyles.financialData}>
                   <div style={reportStyles.financialRow}>
-                    <span>Estimated Tax</span>
+                    <span>{t('financial.estimatedTax')}</span>
                     <span>R{mockReports.financial.data.taxLiability}</span>
                   </div>
                   <div style={reportStyles.financialRow}>
-                    <span>Cash Flow</span>
+                    <span>{t('financial.cashFlow')}</span>
                     <span style={reportStyles.positive}>{mockReports.financial.data.cashFlow}</span>
                   </div>
                 </div>
@@ -243,7 +454,7 @@ const ReportsPage = () => {
             </div>
 
             <div style={reportStyles.projectionsCard}>
-              <h3 style={reportStyles.projectionsTitle}>Business Projections</h3>
+              <h3 style={reportStyles.projectionsTitle}>{t('financial.projections')}</h3>
               <p style={reportStyles.projectionsText}>{mockReports.financial.data.projections}</p>
               <div style={reportStyles.projectionChart}>
                 <div style={reportStyles.projectionBars}>
@@ -263,20 +474,20 @@ const ReportsPage = () => {
               <div style={reportStyles.healthScore}>
                 <div style={reportStyles.scoreCircle}>
                   <span style={reportStyles.scoreValue}>{mockReports.insights.data.healthScore}</span>
-                  <span style={reportStyles.scoreLabel}>Business Health</span>
+                  <span style={reportStyles.scoreLabel}>{t('insights.businessHealth')}</span>
                 </div>
               </div>
               <div style={reportStyles.insightsSummary}>
-                <h3 style={reportStyles.insightsTitle}>AI Business Analysis</h3>
+                <h3 style={reportStyles.insightsTitle}>{t('insights.title')}</h3>
                 <p style={reportStyles.insightsText}>
-                  Based on your transaction patterns, your business shows strong potential for growth.
+                  {t('insights.description')}
                 </p>
               </div>
             </div>
 
             <div style={reportStyles.recommendationsGrid}>
               <div style={reportStyles.recommendationsCard}>
-                <h4 style={reportStyles.recommendationsTitle}>💡 Recommendations</h4>
+                <h4 style={reportStyles.recommendationsTitle}>{t('insights.recommendations')}</h4>
                 <ul style={reportStyles.recommendationsList}>
                   {mockReports.insights.data.recommendations.map((rec, index) => (
                     <li key={index} style={reportStyles.recommendationItem}>{rec}</li>
@@ -285,7 +496,7 @@ const ReportsPage = () => {
               </div>
 
               <div style={reportStyles.opportunitiesCard}>
-                <h4 style={reportStyles.opportunitiesTitle}>🚀 Growth Opportunities</h4>
+                <h4 style={reportStyles.opportunitiesTitle}>{t('insights.opportunities')}</h4>
                 <ul style={reportStyles.opportunitiesList}>
                   {mockReports.insights.data.opportunities.map((opp, index) => (
                     <li key={index} style={reportStyles.opportunityItem}>{opp}</li>
@@ -295,11 +506,11 @@ const ReportsPage = () => {
             </div>
 
             <div style={reportStyles.actionCard}>
-              <h4 style={reportStyles.actionTitle}>Next Steps</h4>
+              <h4 style={reportStyles.actionTitle}>{t('insights.nextSteps')}</h4>
               <div style={reportStyles.actionButtons}>
-                <button style={reportStyles.primaryAction}>Apply for Business Loan</button>
-                <button style={reportStyles.secondaryAction}>Explore Insurance Options</button>
-                <button style={reportStyles.secondaryAction}>Schedule Mentor Session</button>
+                <button style={reportStyles.primaryAction}>{t('insights.actions.applyLoan')}</button>
+                <button style={reportStyles.secondaryAction}>{t('insights.actions.exploreInsurance')}</button>
+                <button style={reportStyles.secondaryAction}>{t('insights.actions.scheduleMentor')}</button>
               </div>
             </div>
           </div>
@@ -309,16 +520,17 @@ const ReportsPage = () => {
       {/* Quick Actions Footer */}
       <div style={reportStyles.footer}>
         <button onClick={() => navigate('/transactions/cash')} style={reportStyles.footerButton}>
-          ➕ Add Another Transaction
+          {t('buttons.addTransaction')}
         </button>
         <button onClick={() => navigate('/dashboard')} style={reportStyles.footerButton}>
-          📋 Back to Dashboard
+          {t('buttons.backDashboard')}
         </button>
       </div>
     </div>
   );
 };
 
+// ... (keep all the same styles from previous version)
 const reportStyles = {
   container: {
     minHeight: '100vh',
@@ -396,7 +608,18 @@ const reportStyles = {
   subtitle: {
     fontSize: '1.2rem',
     color: '#64748b',
-    margin: 0
+    margin: '0 0 12px 0'
+  },
+  businessInfo: {
+    marginTop: '8px'
+  },
+  businessName: {
+    background: '#3b82f6',
+    color: 'white',
+    padding: '8px 16px',
+    borderRadius: '20px',
+    fontSize: '14px',
+    fontWeight: '500'
   },
   headerActions: {
     display: 'flex',

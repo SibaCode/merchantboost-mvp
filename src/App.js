@@ -16,6 +16,7 @@ import StakeholderDashboard from './components/Dashboard/StakeholderDashboard';
 import QRReceiptTemplates from './components/Templates/QRReceiptTemplates';
 import BusinessReports from './components/Reports/BusinessReports';
 import './styles/globals.css';
+import ReportsPage from './components/ReportsPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -96,11 +97,13 @@ function App() {
                     <QRReceiptTemplates />
                   </ProtectedRoute>
                 } />
-                <Route path="/reports" element={
+                <Route path="/reports" element={<ReportsPage />} />
+
+                {/* <Route path="/reports" element={
                   <ProtectedRoute>
                     <BusinessReports />
                   </ProtectedRoute>
-                } />
+                } /> */}
 
                 {/* Fallback */}
                 <Route path="*" element={<Navigate to="/" />} />
