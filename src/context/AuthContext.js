@@ -8,8 +8,10 @@ import {
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
+// Create context first
 const AuthContext = createContext();
 
+// Export useAuth hook
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -18,6 +20,7 @@ export const useAuth = () => {
   return context;
 };
 
+// Export AuthProvider component
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [userProfile, setUserProfile] = useState(null);

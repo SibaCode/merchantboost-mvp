@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { getTranslation } from '../../services/translation';
+import { initializeDemoData } from '../../services/initDatabase';
 
 const EnhancedRegister = () => {
   const { register } = useAuth();

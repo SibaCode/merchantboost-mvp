@@ -1,9 +1,11 @@
+
+
 import { initializeApp } from 'firebase/app';
 import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
 import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
-import { getFunctions } from 'firebase/functions';
 
+// Replace with your actual Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyBWYu0W_yfd_667TU2JqyspUTW78Os5ujY",
   authDomain: "tearsfoundation-df360.firebaseapp.com",
@@ -14,6 +16,7 @@ const firebaseConfig = {
   measurementId: "G-9EQ0CVSHLB"
 };
 
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
@@ -21,7 +24,6 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const storage = getStorage(app);
-export const functions = getFunctions(app);
 
 // Enable offline persistence
 enableIndexedDbPersistence(db).catch((err) => {

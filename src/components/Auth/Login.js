@@ -20,8 +20,9 @@ const Login = () => {
 
     try {
       await login(formData.email, formData.password);
+      // Navigation will happen automatically via AuthContext
     } catch (error) {
-      setError(error.message);
+      setError('Failed to log in: ' + error.message);
     }
     setLoading(false);
   };
@@ -31,6 +32,14 @@ const Login = () => {
       ...prev,
       [e.target.name]: e.target.value
     }));
+  };
+
+  // Demo credentials for easy testing
+  const handleDemoLogin = () => {
+    setFormData({
+      email: 'demo@merchantboost.com',
+      password: 'demo123'
+    });
   };
 
   return (
@@ -54,6 +63,7 @@ const Login = () => {
               onChange={handleChange}
               required
               style={styles.input}
+              placeholder="your@email.com"
             />
           </div>
 
@@ -66,6 +76,7 @@ const Login = () => {
               onChange={handleChange}
               required
               style={styles.input}
+              placeholder="Enter your password"
             />
           </div>
 
@@ -77,6 +88,15 @@ const Login = () => {
             {loading ? 'Signing In...' : getTranslation('login', language)}
           </button>
         </form>
+
+        <div style={styles.demoSection}>
+          <button onClick={handleDemoLogin} style={styles.demoButton}>
+            🚀 Use Demo Credentials
+          </button>
+          <p style={styles.demoNote}>
+            Demo: demo@merchantboost.com / demo123
+          </p>
+        </div>
 
         <p style={styles.signupLink}>
           Don't have an account? <a href="/register">Sign up</a>
@@ -92,14 +112,14 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: 'var(--bg-light)',
+    background: '#f8fafc',
     padding: '20px'
   },
   card: {
-    background: 'var(--white)',
+    background: 'white',
     padding: '40px',
     borderRadius: '12px',
-    boxShadow: 'var(--shadow-lg)',
+    boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
     width: '100%',
     maxWidth: '400px'
   },
@@ -108,7 +128,7 @@ const styles = {
     fontWeight: '600',
     marginBottom: '32px',
     textAlign: 'center',
-    color: 'var(--text-dark)'
+    color: '#1f2937'
   },
   form: {
     display: 'flex',
@@ -122,19 +142,19 @@ const styles = {
   },
   label: {
     fontWeight: '500',
-    color: 'var(--text-dark)',
+    color: '#374151',
     fontSize: '14px'
   },
   input: {
     padding: '12px 16px',
-    border: '1px solid var(--border)',
+    border: '1px solid #d1d5db',
     borderRadius: '8px',
     fontSize: '16px',
     transition: 'border-color 0.3s ease'
   },
   button: {
-    background: 'var(--gradient-primary)',
-    color: 'var(--white)',
+    background: 'linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%)',
+    color: 'white',
     border: 'none',
     padding: '16px',
     borderRadius: '8px',
@@ -152,10 +172,34 @@ const styles = {
     marginBottom: '20px',
     fontSize: '14px'
   },
+  demoSection: {
+    textAlign: 'center',
+    marginTop: '24px',
+    paddingTop: '24px',
+    borderTop: '1px solid #e5e7eb'
+  },
+  demoButton: {
+    background: '#f3f4f6',
+    color: '#374151',
+    border: '1px solid #d1d5db',
+    padding: '12px 20px',
+    borderRadius: '8px',
+    fontSize: '14px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    marginBottom: '8px',
+    width: '100%'
+  },
+  demoNote: {
+    fontSize: '12px',
+    color: '#6b7280',
+    fontStyle: 'italic',
+    margin: 0
+  },
   signupLink: {
     textAlign: 'center',
     marginTop: '24px',
-    color: 'var(--text-light)'
+    color: '#6b7280'
   }
 };
 
