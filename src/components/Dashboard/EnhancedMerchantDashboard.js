@@ -15,7 +15,7 @@ const EnhancedMerchantDashboard = () => {
     nonCashTransactions: 0,
     receiptUploads: 0
   });
-  const [showHelp, setShowHelp] = useState(true);
+  const [activeSection, setActiveSection] = useState('overview');
 
   useEffect(() => {
     if (!currentUser) return;
@@ -48,504 +48,625 @@ const EnhancedMerchantDashboard = () => {
     return unsubscribe;
   }, [currentUser]);
 
-  const getWelcomeMessage = () => {
-    if (userProfile?.registrationType === 'cipc') {
-      return "Welcome registered business! Your CIPC details are verified and stored.";
-    } else if (userProfile?.registrationType === 'tax') {
-      return "Welcome! Your tax-registered business can access enhanced financial services.";
-    } else {
-      return "Welcome! Start tracking your transactions to build your business profile.";
+  const navigationItems = [
+    { id: 'overview', label: 'Overview', icon: '📊' },
+    { id: 'actions', label: 'Quick Actions', icon: '⚡' },
+    { id: 'transactions', label: 'Recent Activity', icon: '🔄' },
+    { id: 'services', label: 'Services', icon: '🛡️' },
+  ];
+
+  const quickActions = [
+    {
+      title: "Add Cash Transaction",
+      description: "Record a cash sale",
+      icon: "💵",
+      link: "/transactions/cash",
+      color: "#10B981"
+    },
+    {
+      title: "Upload Receipt",
+      description: "Process receipt with AI",
+      icon: "📄",
+      link: "/transactions/receipt-upload",
+      color: "#3B82F6"
+    },
+    {
+      title: "Connect Bank",
+      description: "Link your bank account",
+      icon: "🏦",
+      link: "/transactions/non-cash",
+      color: "#8B5CF6"
+    },
+    {
+      title: "Get Insights",
+      description: "Chat with Business AI",
+      icon: "🤖",
+      link: "/ai-chatbot",
+      color: "#F59E0B"
     }
-  };
+  ];
 
-  const getNextSteps = () => {
-    const steps = [
-      {
-        title: "📱 Use QR Receipt Templates",
-        description: "Download and use our QR-coded receipt books to prevent fraud",
-        action: "Download Templates",
-        link: "/templates"
-      },
-      {
-        title: "💵 Record Cash Transactions",
-        description: "Scan QR codes from your receipts or manually enter cash sales",
-        action: "Add Cash Transaction",
-        link: "/transactions/cash"
-      },
-      {
-        title: "💳 Connect Bank Accounts",
-        description: "Link your bank for automatic digital transaction tracking",
-        action: "Connect Bank",
-        link: "/transactions/non-cash"
-      },
-      {
-        title: "📄 Upload Receipts",
-        description: "Upload receipt images for AI-powered validation and digitization",
-        action: "Upload Receipt",
-        link: "/transactions/receipt-upload"
-      },
-      {
-        title: "🤖 Chat with Business AI",
-        description: "Get personalized business advice and health reports",
-        action: "Start Chat",
-        link: "/ai-chatbot"
-      },
-      {
-        title: "📊 View Business Insights",
-        description: "See your business performance and get recommendations",
-        action: "View Reports",
-        link: "/reports"
-      }
-    ];
+  const renderOverview = () => (
+    <div style={styles.section}>
+      {/* Welcome Card */}
+      <div style={styles.welcomeCard}>
+        <div style={styles.welcomeHeader}>
+          <h1 style={styles.welcomeTitle}>
+            Welcome back, {userProfile?.businessName || 'Business'}!
+          </h1>
+          <div style={styles.tierBadge}>
+            {userProfile?.tier?.toUpperCase() || 'STARTER'} TIER
+          </div>
+        </div>
+        <p style={styles.welcomeText}>
+          {userProfile?.registrationType === 'cipc' 
+            ? "Your CIPC details are verified and ready for enhanced services."
+            : "Start tracking transactions to unlock business growth opportunities."}
+        </p>
+      </div>
 
-    return steps;
-  };
+      {/* Stats Grid */}
+      <div style={styles.statsGrid}>
+        <div style={styles.statCard}>
+          <div style={{...styles.statIcon, background: '#ECFDF5'}}>💰</div>
+          <div style={styles.statInfo}>
+            <div style={styles.statValue}>R{stats.totalRevenue.toLocaleString()}</div>
+            <div style={styles.statLabel}>Total Revenue</div>
+          </div>
+        </div>
+        
+        <div style={styles.statCard}>
+          <div style={{...styles.statIcon, background: '#F0F9FF'}}>💵</div>
+          <div style={styles.statInfo}>
+            <div style={styles.statValue}>{stats.cashTransactions}</div>
+            <div style={styles.statLabel}>Cash Transactions</div>
+          </div>
+        </div>
+        
+        <div style={styles.statCard}>
+          <div style={{...styles.statIcon, background: '#F5F3FF'}}>💳</div>
+          <div style={styles.statInfo}>
+            <div style={styles.statValue}>{stats.nonCashTransactions}</div>
+            <div style={styles.statLabel}>Digital Transactions</div>
+          </div>
+        </div>
+        
+        <div style={styles.statCard}>
+          <div style={{...styles.statIcon, background: '#FFFBEB'}}>📄</div>
+          <div style={styles.statInfo}>
+            <div style={styles.statValue}>{stats.receiptUploads}</div>
+            <div style={styles.statLabel}>Receipts Processed</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <h3 style={styles.sectionTitle}>Quick Actions</h3>
+      <div style={styles.actionsGrid}>
+        {quickActions.map((action, index) => (
+          <a key={index} href={action.link} style={styles.actionCard}>
+            <div style={{...styles.actionIcon, background: action.color}}>
+              {action.icon}
+            </div>
+            <div style={styles.actionContent}>
+              <div style={styles.actionTitle}>{action.title}</div>
+              <div style={styles.actionDescription}>{action.description}</div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderQuickActions = () => (
+    <div style={styles.section}>
+      <h2 style={styles.sectionTitle}>Everything You Can Do</h2>
+      <div style={styles.fullActionsGrid}>
+        {[
+          {
+            title: "QR Receipt Templates",
+            description: "Download fraud-prevention receipt books",
+            icon: "📱",
+            link: "/templates"
+          },
+          {
+            title: "Record Transactions",
+            description: "Add cash, digital, or receipt-based transactions",
+            icon: "💵",
+            link: "/transactions"
+          },
+          {
+            title: "Connect Bank Accounts",
+            description: "Automatically track digital payments",
+            icon: "💳",
+            link: "/transactions/non-cash"
+          },
+          {
+            title: "Business AI Chat",
+            description: "Get personalized advice and insights",
+            icon: "🤖",
+            link: "/ai-chatbot"
+          },
+          {
+            title: "View Reports",
+            description: "See business performance analytics",
+            icon: "📊",
+            link: "/reports"
+          },
+          {
+            title: "Download Templates",
+            description: "Get business documents and receipts",
+            icon: "📑",
+            link: "/templates"
+          }
+        ].map((action, index) => (
+          <a key={index} href={action.link} style={styles.fullActionCard}>
+            <div style={styles.fullActionIcon}>{action.icon}</div>
+            <div style={styles.fullActionContent}>
+              <h4 style={styles.fullActionTitle}>{action.title}</h4>
+              <p style={styles.fullActionDescription}>{action.description}</p>
+            </div>
+            <div style={styles.actionArrow}>→</div>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderTransactions = () => (
+    <div style={styles.section}>
+      <div style={styles.sectionHeader}>
+        <h2 style={styles.sectionTitle}>Recent Activity</h2>
+        <a href="/transactions" style={styles.viewAllLink}>View All →</a>
+      </div>
+      
+      <div style={styles.transactionsList}>
+        {transactions.length === 0 ? (
+          <div style={styles.emptyState}>
+            <div style={styles.emptyIcon}>📊</div>
+            <h3 style={styles.emptyTitle}>No transactions yet</h3>
+            <p style={styles.emptyText}>Start by recording your first transaction</p>
+            <a href="/transactions/cash" style={styles.primaryButton}>
+              Add First Transaction
+            </a>
+          </div>
+        ) : (
+          transactions.map(transaction => (
+            <div key={transaction.id} style={styles.transactionItem}>
+              <div style={styles.transactionMain}>
+                <div style={styles.transactionIcon}>
+                  {transaction.type === 'cash' ? '💵' : 
+                   transaction.type === 'non-cash' ? '💳' : '📄'}
+                </div>
+                <div style={styles.transactionDetails}>
+                  <div style={styles.transactionDesc}>
+                    {transaction.description || 'Transaction'}
+                  </div>
+                  <div style={styles.transactionDate}>
+                    {new Date(transaction.date?.toDate()).toLocaleDateString()}
+                  </div>
+                </div>
+              </div>
+              <div style={styles.transactionAmount}>
+                R{transaction.amount}
+                <div style={styles.transactionType}>
+                  {transaction.type}
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+
+  const renderServices = () => (
+    <div style={styles.section}>
+      <h2 style={styles.sectionTitle}>Available Support Services</h2>
+      <div style={styles.servicesGrid}>
+        {[
+          {
+            title: "Business Loans",
+            description: "Working capital based on your transaction history",
+            icon: "💰",
+            status: stats.totalRevenue > 5000 ? 'eligible' : 'build',
+            statusText: stats.totalRevenue > 5000 ? 'Eligible' : 'Build profile'
+          },
+          {
+            title: "Insurance",
+            description: "Tailored business insurance packages",
+            icon: "🛡️",
+            status: transactions.length > 10 ? 'eligible' : 'build',
+            statusText: transactions.length > 10 ? 'Available' : 'Build history'
+          },
+          {
+            title: "Training",
+            description: "Business skills and financial literacy",
+            icon: "🎓",
+            status: 'available',
+            statusText: 'Available'
+          },
+          {
+            title: "Mentorship",
+            description: "Connect with experienced business mentors",
+            icon: "🏢",
+            status: userProfile?.tier === 'pro' ? 'eligible' : 'upgrade',
+            statusText: userProfile?.tier === 'pro' ? 'Available' : 'Upgrade tier'
+          }
+        ].map((service, index) => (
+          <div key={index} style={styles.serviceCard}>
+            <div style={styles.serviceHeader}>
+              <div style={styles.serviceIcon}>{service.icon}</div>
+              <div style={styles.serviceTitle}>{service.title}</div>
+            </div>
+            <p style={styles.serviceDescription}>{service.description}</p>
+            <div style={{
+              ...styles.serviceStatus,
+              background: service.status === 'eligible' ? '#DCFCE7' : 
+                         service.status === 'available' ? '#DBEAFE' : '#FEF3C7',
+              color: service.status === 'eligible' ? '#166534' :
+                     service.status === 'available' ? '#1E40AF' : '#92400E'
+            }}>
+              {service.statusText}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div style={styles.container}>
-      {/* Welcome Section */}
-      <div style={styles.welcomeSection}>
-        <div style={styles.welcomeContent}>
-          <h1 style={styles.welcomeTitle}>
-            Welcome to MerchantBoost, {userProfile?.businessName}!
-          </h1>
-          <p style={styles.welcomeMessage}>{getWelcomeMessage()}</p>
-          <div style={styles.tierSection}>
-            <span style={styles.tierBadge}>
-              {userProfile?.tier?.toUpperCase() || 'STARTER'} TIER
-            </span>
-            <span style={styles.tierDescription}>
-              {userProfile?.tier === 'basic' && 'Track transactions and get basic insights'}
-              {userProfile?.tier === 'intermediate' && 'Access loans and insurance offers'}
-              {userProfile?.tier === 'pro' && 'Premium financial services and mentorship'}
-            </span>
-          </div>
-        </div>
-        <button 
-          onClick={() => setShowHelp(!showHelp)}
-          style={styles.helpToggle}
-        >
-          {showHelp ? 'Hide Help' : 'Show Help'}
-        </button>
-      </div>
+      {/* Navigation */}
+      <nav style={styles.navigation}>
+        {navigationItems.map(item => (
+          <button
+            key={item.id}
+            onClick={() => setActiveSection(item.id)}
+            style={{
+              ...styles.navItem,
+              ...(activeSection === item.id ? styles.navItemActive : {})
+            }}
+          >
+            <span style={styles.navIcon}>{item.icon}</span>
+            {item.label}
+          </button>
+        ))}
+      </nav>
 
-      {/* Help Section */}
-      {showHelp && (
-        <div style={styles.helpSection}>
-          <h3 style={styles.helpTitle}>🚀 Getting Started Guide</h3>
-          <div style={styles.helpGrid}>
-            <div style={styles.helpCard}>
-              <h4>📋 Step 1: Use QR Receipts</h4>
-              <p>Download our special receipt books with QR codes. Every receipt has a unique code that prevents fraud and ensures transaction authenticity.</p>
-              <ul>
-                <li>Unique QR codes for each receipt</li>
-                <li>Prevents duplicate entries</li>
-                <li>Builds trust with customers</li>
-              </ul>
-            </div>
-            <div style={styles.helpCard}>
-              <h4>💵 Step 2: Record Transactions</h4>
-              <p>Track all your business income and expenses:</p>
-              <ul>
-                <li><strong>Cash:</strong> Scan QR codes or manual entry</li>
-                <li><strong>Digital:</strong> Connect bank accounts automatically</li>
-                <li><strong>Receipts:</strong> Upload images for AI processing</li>
-              </ul>
-            </div>
-            <div style={styles.helpCard}>
-              <h4>🤖 Step 3: Get AI Insights</h4>
-              <p>Our AI analyzes your business data to provide:</p>
-              <ul>
-                <li>Business health reports</li>
-                <li>Loan and grant eligibility</li>
-                <li>Fraud detection and alerts</li>
-                <li>Personalized recommendations</li>
-              </ul>
-            </div>
-            <div style={styles.helpCard}>
-              <h4>🎯 Step 4: Access Services</h4>
-              <p>Based on your business profile, access:</p>
-              <ul>
-                <li>Business loans and funding</li>
-                <li>Insurance packages</li>
-                <li>Training and mentorship</li>
-                <li>Government support programs</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Quick Stats */}
-      <div style={styles.statsSection}>
-        <h3 style={styles.sectionTitle}>Your Business at a Glance</h3>
-        <div style={styles.statsGrid}>
-          <div style={styles.statCard}>
-            <div style={styles.statIcon}>💰</div>
-            <div style={styles.statContent}>
-              <h3 style={styles.statValue}>R{stats.totalRevenue.toLocaleString()}</h3>
-              <p style={styles.statLabel}>Total Revenue</p>
-            </div>
-          </div>
-          <div style={styles.statCard}>
-            <div style={styles.statIcon}>💵</div>
-            <div style={styles.statContent}>
-              <h3 style={styles.statValue}>{stats.cashTransactions}</h3>
-              <p style={styles.statLabel}>Cash Transactions</p>
-            </div>
-          </div>
-          <div style={styles.statCard}>
-            <div style={styles.statIcon}>💳</div>
-            <div style={styles.statContent}>
-              <h3 style={styles.statValue}>{stats.nonCashTransactions}</h3>
-              <p style={styles.statLabel}>Digital Transactions</p>
-            </div>
-          </div>
-          <div style={styles.statCard}>
-            <div style={styles.statIcon}>📄</div>
-            <div style={styles.statContent}>
-              <h3 style={styles.statValue}>{stats.receiptUploads}</h3>
-              <p style={styles.statLabel}>Receipts Processed</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Action Grid */}
-      <div style={styles.actionsSection}>
-        <h3 style={styles.sectionTitle}>What Would You Like to Do?</h3>
-        <div style={styles.actionsGrid}>
-          {getNextSteps().map((step, index) => (
-            <div key={index} style={styles.actionCard}>
-              <div style={styles.actionHeader}>
-                <div style={styles.actionIcon}>{step.title.split(' ')[0]}</div>
-                <h4 style={styles.actionTitle}>{step.title.split(' ').slice(1).join(' ')}</h4>
-              </div>
-              <p style={styles.actionDescription}>{step.description}</p>
-              <a href={step.link} style={styles.actionButton}>
-                {step.action}
-              </a>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Recent Activity */}
-      <div style={styles.activitySection}>
-        <h3 style={styles.sectionTitle}>Recent Activity</h3>
-        <div style={styles.transactions}>
-          {transactions.length === 0 ? (
-            <div style={styles.noData}>
-              <p>No transactions yet. Start by adding your first transaction!</p>
-              <small>Your transactions will appear here as you record them.</small>
-            </div>
-          ) : (
-            transactions.map(transaction => (
-              <div key={transaction.id} style={styles.transaction}>
-                <div style={styles.transactionInfo}>
-                  <span style={styles.transactionDesc}>
-                    {transaction.description}
-                  </span>
-                  <span style={styles.transactionDate}>
-                    {new Date(transaction.date?.toDate()).toLocaleDateString()}
-                  </span>
-                </div>
-                <div style={styles.transactionAmount}>
-                  R{transaction.amount}
-                  <span style={styles.transactionType}>
-                    {transaction.type}
-                  </span>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-
-      {/* Support Services Preview */}
-      <div style={styles.servicesSection}>
-        <h3 style={styles.sectionTitle}>Available Support Services</h3>
-        <div style={styles.servicesGrid}>
-          <div style={styles.serviceCard}>
-            <h4>💰 Business Loans</h4>
-            <p>Access working capital based on your transaction history</p>
-            <div style={styles.serviceStatus}>
-              {stats.totalRevenue > 5000 ? '✅ Eligible' : '📈 Build profile'}
-            </div>
-          </div>
-          <div style={styles.serviceCard}>
-            <h4>🛡️ Insurance</h4>
-            <p>Protect your business with tailored insurance packages</p>
-            <div style={styles.serviceStatus}>
-              {stats.transactionCount > 10 ? '✅ Available' : '📈 Build history'}
-            </div>
-          </div>
-          <div style={styles.serviceCard}>
-            <h4>🎓 Training</h4>
-            <p>Business skills and financial literacy workshops</p>
-            <div style={styles.serviceStatus}>✅ Available</div>
-          </div>
-          <div style={styles.serviceCard}>
-            <h4>🏢 Mentorship</h4>
-            <p>Connect with experienced business mentors</p>
-            <div style={styles.serviceStatus}>
-              {userProfile?.tier === 'pro' ? '✅ Available' : '⭐ Upgrade tier'}
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Main Content */}
+      <main style={styles.mainContent}>
+        {activeSection === 'overview' && renderOverview()}
+        {activeSection === 'actions' && renderQuickActions()}
+        {activeSection === 'transactions' && renderTransactions()}
+        {activeSection === 'services' && renderServices()}
+      </main>
     </div>
   );
 };
 
 const styles = {
   container: {
-    padding: '24px',
-    maxWidth: '1200px',
-    margin: '0 auto'
+    minHeight: '100vh',
+    background: '#F8FAFC',
+    padding: '20px'
   },
-  welcomeSection: {
-    background: 'var(--gradient-primary)',
-    color: 'var(--white)',
-    padding: '32px',
-    borderRadius: '16px',
-    marginBottom: '32px',
+  navigation: {
     display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start'
+    gap: '8px',
+    background: 'white',
+    padding: '8px',
+    borderRadius: '12px',
+    marginBottom: '24px',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
   },
-  welcomeContent: {
-    flex: 1
-  },
-  welcomeTitle: {
-    fontSize: '32px',
-    fontWeight: '700',
-    marginBottom: '12px'
-  },
-  welcomeMessage: {
-    fontSize: '18px',
-    opacity: '0.9',
-    marginBottom: '20px',
-    maxWidth: '600px'
-  },
-  tierSection: {
+  navItem: {
     display: 'flex',
     alignItems: 'center',
-    gap: '16px'
-  },
-  tierBadge: {
-    background: 'rgba(255, 255, 255, 0.2)',
-    padding: '8px 16px',
-    borderRadius: '20px',
-    fontSize: '14px',
-    fontWeight: '600',
-    border: '1px solid rgba(255, 255, 255, 0.3)'
-  },
-  tierDescription: {
-    fontSize: '14px',
-    opacity: '0.8'
-  },
-  helpToggle: {
-    background: 'rgba(255, 255, 255, 0.2)',
-    color: 'var(--white)',
-    border: '1px solid rgba(255, 255, 255, 0.3)',
-    padding: '8px 16px',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontWeight: '500'
-  },
-  helpSection: {
-    background: 'var(--white)',
-    padding: '32px',
-    borderRadius: '12px',
-    boxShadow: 'var(--shadow)',
-    marginBottom: '32px'
-  },
-  helpTitle: {
-    fontSize: '24px',
-    fontWeight: '600',
-    marginBottom: '24px',
-    color: 'var(--text-dark)'
-  },
-  helpGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-    gap: '24px'
-  },
-  helpCard: {
-    padding: '20px',
-    background: '#f8fafc',
+    gap: '8px',
+    padding: '12px 16px',
+    border: 'none',
+    background: 'transparent',
     borderRadius: '8px',
-    border: '1px solid var(--border)'
+    cursor: 'pointer',
+    fontSize: '14px',
+    fontWeight: '500',
+    color: '#64748B',
+    transition: 'all 0.2s ease'
   },
-  statsSection: {
-    marginBottom: '32px'
+  navItemActive: {
+    background: '#3B82F6',
+    color: 'white'
+  },
+  navIcon: {
+    fontSize: '16px'
+  },
+  mainContent: {
+    maxWidth: '1000px',
+    margin: '0 auto'
+  },
+  section: {
+    background: 'white',
+    borderRadius: '12px',
+    padding: '24px',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+    marginBottom: '24px'
+  },
+  sectionHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '20px'
   },
   sectionTitle: {
-    fontSize: '24px',
+    fontSize: '20px',
     fontWeight: '600',
-    marginBottom: '24px',
-    color: 'var(--text-dark)'
+    color: '#1E293B',
+    margin: '0 0 20px 0'
+  },
+  viewAllLink: {
+    color: '#3B82F6',
+    textDecoration: 'none',
+    fontWeight: '500',
+    fontSize: '14px'
+  },
+  welcomeCard: {
+    background: 'linear(135deg, #667eea 0%, #764ba2 100%)',
+    color: 'white',
+    padding: '24px',
+    borderRadius: '12px',
+    marginBottom: '24px'
+  },
+  welcomeHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: '8px'
+  },
+  welcomeTitle: {
+    fontSize: '24px',
+    fontWeight: '700',
+    margin: '0'
+  },
+  tierBadge: {
+    background: 'rgba(255,255,255,0.2)',
+    padding: '6px 12px',
+    borderRadius: '20px',
+    fontSize: '12px',
+    fontWeight: '600'
+  },
+  welcomeText: {
+    margin: '0',
+    opacity: '0.9',
+    fontSize: '16px'
   },
   statsGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '24px'
-  },
-  statCard: {
-    background: 'var(--white)',
-    padding: '24px',
-    borderRadius: '12px',
-    boxShadow: 'var(--shadow)',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px'
-  },
-  statIcon: {
-    fontSize: '32px',
-    width: '60px',
-    height: '60px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: 'var(--gradient-secondary)',
-    borderRadius: '12px'
-  },
-  statContent: {
-    flex: 1
-  },
-  statValue: {
-    fontSize: '24px',
-    fontWeight: '600',
-    color: 'var(--text-dark)',
-    marginBottom: '4px'
-  },
-  statLabel: {
-    color: 'var(--text-light)',
-    fontSize: '14px'
-  },
-  actionsSection: {
+    gap: '16px',
     marginBottom: '32px'
   },
-  actionsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-    gap: '24px'
-  },
-  actionCard: {
-    background: 'var(--white)',
-    padding: '24px',
-    borderRadius: '12px',
-    boxShadow: 'var(--shadow)',
-    border: '2px solid transparent',
-    transition: 'transform 0.3s ease'
-  },
-  actionHeader: {
+  statCard: {
     display: 'flex',
     alignItems: 'center',
     gap: '16px',
-    marginBottom: '16px'
+    padding: '20px',
+    background: '#F8FAFC',
+    borderRadius: '8px',
+    border: '1px solid #E2E8F0'
+  },
+  statIcon: {
+    width: '48px',
+    height: '48px',
+    borderRadius: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '20px'
+  },
+  statInfo: {
+    flex: 1
+  },
+  statValue: {
+    fontSize: '20px',
+    fontWeight: '600',
+    color: '#1E293B',
+    marginBottom: '4px'
+  },
+  statLabel: {
+    fontSize: '14px',
+    color: '#64748B'
+  },
+  actionsGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+    gap: '16px'
+  },
+  actionCard: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+    padding: '20px',
+    background: 'white',
+    borderRadius: '8px',
+    border: '1px solid #E2E8F0',
+    textDecoration: 'none',
+    color: 'inherit',
+    transition: 'all 0.2s ease'
   },
   actionIcon: {
+    width: '48px',
+    height: '48px',
+    borderRadius: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '20px',
+    color: 'white'
+  },
+  actionContent: {
+    flex: 1
+  },
+  actionTitle: {
+    fontSize: '16px',
+    fontWeight: '600',
+    color: '#1E293B',
+    marginBottom: '4px'
+  },
+  actionDescription: {
+    fontSize: '14px',
+    color: '#64748B'
+  },
+  fullActionsGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+    gap: '16px'
+  },
+  fullActionCard: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+    padding: '20px',
+    background: 'white',
+    borderRadius: '8px',
+    border: '1px solid #E2E8F0',
+    textDecoration: 'none',
+    color: 'inherit',
+    transition: 'all 0.2s ease'
+  },
+  fullActionIcon: {
     fontSize: '24px',
     width: '48px',
     height: '48px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: 'var(--bg-light)',
+    background: '#F1F5F9',
     borderRadius: '8px'
   },
-  actionTitle: {
-    fontSize: '18px',
+  fullActionContent: {
+    flex: 1
+  },
+  fullActionTitle: {
+    fontSize: '16px',
     fontWeight: '600',
-    color: 'var(--text-dark)',
-    margin: 0
+    color: '#1E293B',
+    margin: '0 0 4px 0'
   },
-  actionDescription: {
-    color: 'var(--text-light)',
-    marginBottom: '20px',
-    lineHeight: '1.5'
-  },
-  actionButton: {
-    display: 'inline-block',
-    background: 'var(--gradient-primary)',
-    color: 'var(--white)',
-    padding: '12px 20px',
-    borderRadius: '8px',
-    textDecoration: 'none',
+  fullActionDescription: {
     fontSize: '14px',
-    fontWeight: '600',
-    transition: 'all 0.3s ease'
+    color: '#64748B',
+    margin: '0'
   },
-  activitySection: {
-    marginBottom: '32px'
+  actionArrow: {
+    color: '#64748B',
+    fontSize: '18px'
   },
-  transactions: {
-    background: 'var(--white)',
-    borderRadius: '12px',
-    boxShadow: 'var(--shadow)',
-    overflow: 'hidden'
+  transactionsList: {
+    spaceY: '8px'
   },
-  transaction: {
+  transactionItem: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '16px 24px',
-    borderBottom: '1px solid var(--border)'
+    padding: '16px',
+    borderBottom: '1px solid #E2E8F0',
+    '&:last-child': {
+      borderBottom: 'none'
+    }
   },
-  transactionInfo: {
+  transactionMain: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px'
+  },
+  transactionIcon: {
+    fontSize: '20px'
+  },
+  transactionDetails: {
     display: 'flex',
     flexDirection: 'column',
     gap: '4px'
   },
   transactionDesc: {
     fontWeight: '500',
-    color: 'var(--text-dark)'
+    color: '#1E293B'
   },
   transactionDate: {
     fontSize: '12px',
-    color: 'var(--text-light)'
+    color: '#64748B'
   },
   transactionAmount: {
-    fontWeight: '600',
-    color: 'var(--success)',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-end',
-    gap: '4px'
+    textAlign: 'right'
   },
   transactionType: {
     fontSize: '12px',
-    color: 'var(--text-light)',
-    background: '#f1f5f9',
+    color: '#64748B',
+    background: '#F1F5F9',
     padding: '2px 8px',
-    borderRadius: '12px'
+    borderRadius: '12px',
+    marginTop: '4px'
   },
-  noData: {
-    padding: '60px 40px',
+  emptyState: {
     textAlign: 'center',
-    color: 'var(--text-light)'
+    padding: '60px 20px'
   },
-  servicesSection: {
-    marginBottom: '40px'
+  emptyIcon: {
+    fontSize: '48px',
+    marginBottom: '16px'
+  },
+  emptyTitle: {
+    fontSize: '18px',
+    fontWeight: '600',
+    color: '#1E293B',
+    marginBottom: '8px'
+  },
+  emptyText: {
+    color: '#64748B',
+    marginBottom: '20px'
+  },
+  primaryButton: {
+    display: 'inline-block',
+    background: '#3B82F6',
+    color: 'white',
+    padding: '12px 24px',
+    borderRadius: '8px',
+    textDecoration: 'none',
+    fontWeight: '500',
+    fontSize: '14px'
   },
   servicesGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-    gap: '24px'
+    gap: '16px'
   },
   serviceCard: {
-    background: 'var(--white)',
-    padding: '24px',
-    borderRadius: '12px',
-    boxShadow: 'var(--shadow)',
-    border: '1px solid var(--border)'
+    padding: '20px',
+    background: '#F8FAFC',
+    borderRadius: '8px',
+    border: '1px solid #E2E8F0'
+  },
+  serviceHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    marginBottom: '12px'
+  },
+  serviceIcon: {
+    fontSize: '20px'
+  },
+  serviceTitle: {
+    fontSize: '16px',
+    fontWeight: '600',
+    color: '#1E293B'
+  },
+  serviceDescription: {
+    fontSize: '14px',
+    color: '#64748B',
+    marginBottom: '16px'
   },
   serviceStatus: {
-    marginTop: '12px',
     padding: '8px 12px',
-    background: '#f0f9ff',
     borderRadius: '6px',
     fontSize: '14px',
     fontWeight: '500',

@@ -62,7 +62,7 @@ function App() {
                   </ProtectedRoute>
                 } />
                 <Route path="/transactions/cash" element={
-                  <ProtectedRoute>ick Actions
+                  <ProtectedRoute>
                     <CashTransactions />
                   </ProtectedRoute>
                 } />
