@@ -17,7 +17,6 @@ import QRReceiptTemplates from './components/Templates/QRReceiptTemplates';
 import BusinessReports from './components/Reports/BusinessReports';
 import './styles/globals.css';
 import ReportsPage from './components/ReportsPage';
-
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const { currentUser } = useAuth();
@@ -87,7 +86,7 @@ function App() {
                     <ConsentManager />
                   </ProtectedRoute>
                 } />
-                <Route path="/stakeholder/:type" element={
+                <Route path="/stakeholder" element={
                   <ProtectedRoute>
                     <StakeholderDashboard />
                   </ProtectedRoute>
