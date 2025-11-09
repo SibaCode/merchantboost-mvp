@@ -4,15 +4,17 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
 import Header from './components/Layout/Header';
 import Landing from './pages/Landing';
-import Register from './components/Auth/Register';
+import EnhancedRegister from './components/Auth/EnhancedRegister';
 import Login from './components/Auth/Login';
-import MerchantDashboard from './components/Dashboard/MerchantDashboard';
+import UserFriendlyDashboard from './components/Dashboard/UserFriendlyDashboard';
 import CashTransactions from './components/Transactions/CashTransactions';
 import NonCashTransactions from './components/Transactions/NonCashTransactions';
+import ReceiptUpload from './components/Transactions/ReceiptUpload';
 import Chatbot from './components/AI/Chatbot';
 import ConsentManager from './components/Settings/ConsentManager';
 import StakeholderDashboard from './components/Dashboard/StakeholderDashboard';
-import Reports from './pages/Reports';
+import QRReceiptTemplates from './components/Templates/QRReceiptTemplates';
+import BusinessReports from './components/Reports/BusinessReports';
 import './styles/globals.css';
 
 // Protected Route Component
@@ -49,14 +51,14 @@ function App() {
                 } />
                 <Route path="/register" element={
                   <PublicRoute>
-                    <Register />
+                    <EnhancedRegister />
                   </PublicRoute>
                 } />
 
                 {/* Protected Routes */}
                 <Route path="/dashboard" element={
                   <ProtectedRoute>
-                    <MerchantDashboard />
+                    <UserFriendlyDashboard />
                   </ProtectedRoute>
                 } />
                 <Route path="/transactions/cash" element={
@@ -67,6 +69,11 @@ function App() {
                 <Route path="/transactions/non-cash" element={
                   <ProtectedRoute>
                     <NonCashTransactions />
+                  </ProtectedRoute>
+                } />
+                <Route path="/transactions/receipt-upload" element={
+                  <ProtectedRoute>
+                    <ReceiptUpload />
                   </ProtectedRoute>
                 } />
                 <Route path="/ai-chatbot" element={
@@ -84,9 +91,14 @@ function App() {
                     <StakeholderDashboard />
                   </ProtectedRoute>
                 } />
+                <Route path="/templates" element={
+                  <ProtectedRoute>
+                    <QRReceiptTemplates />
+                  </ProtectedRoute>
+                } />
                 <Route path="/reports" element={
                   <ProtectedRoute>
-                    <Reports />
+                    <BusinessReports />
                   </ProtectedRoute>
                 } />
 
